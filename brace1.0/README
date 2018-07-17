@@ -1,0 +1,140 @@
+README
+Spring 2018
+
+Brace yourselves for brace1! The leap forward in the design of brace1
+is the inclusion of variables. As you will learn, variables are a
+major addition to a language that has far-reaching effects on the
+metatheory as well as any compiler.
+
+======
+
+The concrete syntax of brace1 is as follows.
+
+ty ::= Nat 
+     | Bool
+     | Unit
+     | (* ty ty)
+     | (Opt ty)
+
+t  ::= T
+     | F
+     | 0
+     | {if t then t else t}
+     | {+1 t}
+     | {-1 t}
+     | {isz t}
+     | {&& t t}
+     | {|| t t}
+     | {! t}
+     | {== t t}
+     | ()            // the unit constant
+     | x             // variables
+     | {x <- t in t} // variable bindings
+     | {# t t}       // pairs
+     | {#1 t}        // #1 is the "first of pair" operator
+     | {#2 t}        // #2 is the "second of pair" operator
+     | {some t}      
+     | {none ty}     // the none type annotation leaves out the Opt; see below
+     | {case t of some x -> t | none -> t} // this is the "optcase"; see below
+
+x is a variable according to the syntax defined below.
+
+Whitespace, defined as spaces, tabs, and newlines, is ignored.
+
+C++ style // to end-of-line comments are supported.
+
+In none terms, a none term of type (Opt Bool) is written {none Bool}
+and not {none (Opt Bool)}. Since we already know a none is an Opt, the
+latter form is unnecessarily verbose. Having said that,
+{none (Opt Bool)} is still a meaningful term: it is an optional
+*optional* boolean. Proceed with caution.
+
+A variable name in brace1 is a lowercase letter, followed by any
+number of letters, numbers, and underscores that is not one of the
+language's reserved words (such as "if", "then", "else", "isz",
+etc.). A type name is similar, but starts with an uppercase
+letter. Since there is no way to invent a new type name in brace1,
+these are exactly "Nat", "Bool", and "Unit", as well as the infinite
+family of types that can be constructed by the type constructors.
+
+======
+
+Once again, "grep todo *.sml" will give you an overview of what you
+need to do for this assignment. The bulk of the work to be done is in
+Scan, Parse, TypeCheck, and Eval, and a bit in AST. Please start by
+browsing every module to get a sense of the larger structure of the
+compiler. Note that this compiler is empowered to compile *files* as
+well as strings (have a look at Compile).
+
+To anticipate a question, even the modules that need no editing, such
+as Compile, can include Check tests and are encouraged to do so. I've
+also included a few sample programs in the brace1 directory. You may
+wish to initiate or participate in crowdsourcing the sharing of sample
+programs as happily happened last week.
+
+There are various "to string" functions already written and sprinkled
+throughout. Be aware of them as they can be powerful allies on
+debugging adventures.
+
+======
+
+Please note that == compares any two values as long as they have the
+same type. Since brace1 has infinitely many types, this is an
+infinitely large set of additional cases to consider. It is handled
+easily enough with recursion.
+
+======
+
+The optcase form is the elimination form for options. We have two
+introduction forms for options, some and none, but with only those, we
+have no way to deconstruct optional values once constructed. The
+optcase form distinguishes between some and none and, having done so,
+evaluates the matching branch. Please design a short-circuiting
+evaluation step system for optcase that aligns with our other
+short-circuiting rules (such as "if" and "and").
+
+For the purposes of parsing, the "some" and "none" that designate the
+optcase branches are _keywords_ and not terms in themselves. That is
+to say, any optcase must have the following basic framework:
+
+  {case ? of some x -> ? | none -> ?}
+
+The question marks are the terms; the x can be any variable name; all
+the rest is required and inflexible.
+
+The optcase behaves like an SML case and should evaluate
+similarly. Some examples follow.
+
+{case {some 0} of some x -> {+1 x} | none -> 0}
+-- evaluates to {+1 0}
+
+{case 0 of some x -> {+1 x} | none -> 0}
+-- type error
+
+{case {some 0} of some x -> {+1 x} | none -> ()}
+-- type error
+
+{case {some T} of some x -> {! x} | none -> T}
+-- evaluates to F
+
+{case {none Bool} of some x -> 0 | none -> {+1 0}}
+-- evaluates to {+1 0}
+
+{x <- {some 0} in {case x of some y -> y | none -> {+1 0}}}
+-- evaluates to 0
+
+{x <- 0 in {case x of some y -> y | none -> {+1 0}}}
+-- type error
+
+Please note that *evaluation of the some-branch term can (and should)
+use the same substitution operation that the bodies of let forms do*.
+
+======
+
+In scanning and parsing alphanumeric identifiers, there is a set of
+useful functions already provided by the SML Basis Library including
+Char.isUpper, Char.isLower, etc. There is a list at
+
+http://sml-family.org/Basis/char.html
+
+Please use whichever of these seems helpful.

@@ -1,0 +1,9 @@
+Group
+  signature CHECK	
+  structure Check
+  structure PSET
+is
+  $/basis.cm
+  check.sig
+  check.sml
+  pset.sml

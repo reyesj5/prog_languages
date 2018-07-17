@@ -1,0 +1,92 @@
+Spring 2018
+
+Welcome to brace0, a simple, less than practical, fully-delimited
+expression language with Boolean, natural numbers, conditionals, and a
+few basic operations.
+
+========
+
+This archive contains 10 files.
+
+- This file.
+
+- check.sig and check.sml, to enable unit testing
+
+- ast.sml, which defines the abstract syntax trees of brace0 programs
+
+- scan.sml, which implements a lexical scanner for brace0 programs
+
+- parse.sml, which parses sequences of tokens into abstract syntax trees
+
+- typecheck.sml, which raises errors on ill-typed programs
+
+- eval.sml, which evaluates (simplifies) brace0 programs
+
+- compile.sml, which shepherds programs through the compilation pipeline
+
+- sources.cm for compilation
+
+========
+
+The concrete syntax of brace0 is as follows.
+
+t ::= T
+    | F
+    | 0
+    | {if t then t else t}
+    | {+1 t}
+    | {-1 t}
+    | {isz t}
+    | {&& t t}
+    | {|| t t}
+    | {! t}
+    | {== t t}
+
+Whitespace is defined as either spaces, newlines, or tabs. Aside from
+the restriction that whitespace is not allowed within a token (e.g,
+"i f" is not an acceptable from of the "if" token) whitespace is ignored
+and is discarded in the scanning phase.
+
+C++ style // to end-of-line comments are also supported. Note that
+slash is not a token in the language as comments, like whitespace, are
+discarded during scanning.
+
+To understand the difference between concrete and abstract syntax,
+note that "then" and "else" have no presence in ASTs; they are
+syntactic guideposts to enable parsing (and perhaps to clarify source
+programs). The same is true of all curly braces.
+
+During evaluation, be sure to follow the single-step evaluation
+relation as defined in Figures 3.1 and 3.2 of the text. Logical-and
+and logical-or should be implemented to short circuit as those
+operators do in practical languages such as C and Java.
+
+There are two compilation functions given. One runs typechecking and
+raises an exception in the case of an ill-typed program; the other
+omits the typechecking phase. Both will simplify any program to a
+normal form, but only the former is guaranteed to simplify to a
+value. This is the fruition of the underlying theory.
+
+Please note that there exists Check.exn for checking exception-raising
+computations. We will not evaluate you on how much (or how little) you
+make use of Check, but please note that it is appropriate to insert
+spot checks frequently in the manner of the first homework. Checks
+(unit tests) will quietly ride along with you as you work and kindly
+alert you to shallow problems before they become deep and inscrutable
+ones.
+
+The type system contains no surprises; the only two points that might
+not be immediately obvious are (1) that the two branches of every
+if-expression must share the same type, and (2) the two arguments to
+every == must share the same type.
+
+The Compile module is fully implemented; you need not edit that
+file. Otherwise, look for the string "todo" in the rest of files to
+see what you need to complete. ("grep todo *.sml" will give you an
+overview.) It is likely you will want to add your own helper functions
+throughout, but you do not need to alter any signatures. Please note
+it is forbidden to change any of the provided datatype or val
+specifications in any signatures, as such changes will break our
+testing framework.
+
+-- Adam Shaw, April 12, 2018

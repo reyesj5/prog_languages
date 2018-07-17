@@ -1,0 +1,19 @@
+Group
+  signature CHECK
+  structure Check
+  structure AST
+  structure Scan
+  structure Parse
+  structure TypeCheck
+  structure Eval
+  structure Compile
+is
+  $/basis.cm
+  check.sig
+  check.sml
+  ast.sml
+  scan.sml
+  parse.sml
+  typecheck.sml
+  eval.sml
+  compile.sml

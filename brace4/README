@@ -1,0 +1,116 @@
+README
+Spring 2018
+
+It is with a mixture of joy and sadness that I present to you the last
+in the family of brace languages: brace4. The brace4 language combines
+ref cells with records and subtyping, leaving out a number of
+complementary features (e.g, numbers, pairs, recursive functions,
+options, etc.) that could have been included here, but would only make
+the exercise longer without making it much deeper.
+
+ty ::= Bool
+     | Unit
+     | (-> ty ty)
+     | (Ref ty)                 
+     | {label:ty, ..., label:ty}
+
+t ::= x
+    | (t t)
+    | {x : ty . t}
+    | {x <- t in t}
+    | ()
+    | T
+    | F
+    | {not t}
+    | {if t t t}
+    | {ref t}
+    | {!t}
+    | {:= t t}
+    | {$ t ... t}
+    | {label=t,...,label=t}
+    | {#label t}
+
+The terms in brace4 are as follows, in the same order in which they
+are presented in the term grammar: variables, applications,
+abstractions, let bindings, unit, true and false, not and if, ref
+cells, dereference expressions, assignment, sequences, records, and
+record selection. The first handful of terms, repetitious by now, are
+included to give you something to do in your programs with the novel
+expression forms; we wouldn't want the language to contain only unit
+and offer no even minimally interesting computation.
+
+Please note that the bang symbol, used to mean logical not in previous
+exercises, now means dereference; logical not is written literally
+"not" in brace4. The provided scanner and parser handle this detail
+for you, but, to avoid befuddlement, keep this distinction in mind
+when composing tests.
+
+The ref (i.e., alloc), deref (i.e., read), and assign (i.e., write)
+forms correspond to their syntactic analogues in SML; their typing
+rules are as given in Chapter 13 of TaPL. When reading chapter 13,
+keep in mind that capital sigma, the store typing, plays no role in
+checking brace4 programs; it is a theoretical artifact which exists to
+enable writing proofs, and it need not concern you here.
+
+Sequencing is written in brace4 {$ t ... t}. A sequence consists of
+one or more terms. They are evaluated in order from left to right. All
+terms except the last one must have type Unit. Whatever the type of
+the last term is is the type of the whole sequence. For example, the
+sequence {$ () () () T} is well-typed with type Bool. The sequence {$
+{not T} T} is not well-typed, because it contains an intermediate term
+of a type other than Unit.
+
+The last two forms in the grammar are record introduction and
+elimination. Record terms are written
+
+  {a=T, b={x:Bool.x}, c=()}
+
+which is of type
+
+  {a:Bool, b:(-> Bool Bool), c:Unit}
+
+and record selection is written
+
+  {#a {a=T, b={x:Bool.x}, c=()}}
+
+It is a type error to select a field from a record which is not in the
+record.
+
+Make sure that functions can be applied to records that provide at
+least what is needed and possibly more. This is accomplished via
+subtyping and this is a feature excluded from Standard ML. Consider
+this example:
+
+  ({r:{a:Bool,b:Bool}.{not {#a r}}} {a=T,b=F,c=()})
+
+This application is well typed under the subtyping framework presented
+in Chapters 15 and 16 of the text, even though the domain type of the
+function is not an exact match for the type of the argument.
+
+As before, a scanner and parser are provided for you; you will need to
+complete the implementations of type checking, including subtyping,
+and evaluation, including the implementation of a runtime heap.
+
+The heap implementation is contained in the Store module. There are
+several ways to implement a heap, one of which is to use an array or
+terms (or maybe term options) providing constant-time reading and
+writing. SML includes an Array structure with all the basic array
+operations plus various bells and whistles; you can read about it
+here:
+
+  http://sml-family.org/Basis/array.html
+
+You may use arrays in Store, but it is not your only implementation
+choice.
+
+Last but not least, if you *want* to mix together all the features of
+the brace_k languages into a big delicious programming language soup,
+you might want to go ahead and do so, albeit not in the context of
+this homework exercise. You know enough, now, to try it. You might
+even want to include programming language features from later in the
+text, or from some other text, or even, perhaps, leaping forth from
+the fertile soil of your own imagination. Who knows what tools and
+devices we'll have at our fingertips in the programming languages of
+the future? We shall see.
+
+-ams

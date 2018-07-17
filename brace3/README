@@ -1,0 +1,88 @@
+README
+Spring 2018
+
+Welcome to brace3! Whereas brace2 was the untyped lambda calculus
+supplemented with one sugary form, brace3 is the untyped lambda
+calculus with a heap of sugar dumped on it.
+
+The good news is, almost the whole front end and back end are mostly
+completed already. Therefore most of your work will be devoted to
+internal compiler transformations.
+
+The concrete syntax of brace3 is as follows:
+
+t ::= x
+    | {x ... x . t}   // there can be one or more variables in an abstraction
+    | (t ... t)       // there can be two or more terms in an application
+    | {x <- t in t}   // let
+    | {x <= t in t)   // letrec (see below)
+    | T              
+    | F              
+    | {if t then t else t}
+    | {! t}
+    | {&& t t}
+    | {|| t t}
+    | n               // nats, written 0, 1, ..., 17, ...
+    | {+ n n}         // addition!
+    | {* n n}         // multiplication!
+    | {# t t}
+    | {#1 t}
+    | {#2 t}
+    | /x              // shorthand for identity functions
+
+For the most part, the syntax of brace_n predecessors is retained. One
+notable difference is that abstractions now include a dot (".")
+between the variable(s) and the body. Therefore what used to be
+written {a a} is now written {a . a}. The dot is helpful when writing
+multi-argument functions, such as {a b . c}.
+
+Applications can now include more than two terms. Any fewer than two
+terms in an application will cause a parse error. The application (t1
+t2 t3) is shorthand for ((t1 t2) t3), and so on, with application
+associating to the left. Please note that (t1 (t2 t3)) can still be
+expressed, it just needs to be written like that, with parentheses
+making the association clear.
+
+Let is as before. LetRec desugars to terms including fix as given in
+11.11 in the text (without the type). You do not need to understand
+fix (and, seriously, who does?) to code it up (it's just a lambda
+abstraction) and insert it according to the LetRec rules.
+
+Booleans, boolean operations, natural numbers, addition and
+multiplication, pairs, and pair selectors, are all given in their ULC
+forms in Chapter 5 of the text. Desugar down to those forms in all
+cases.
+
+The one remaining form in brace3, /x, is simply a shortcut for typing
+the identity function {x . x}. You can use any variable name: /a, /b,
+etc. You may find these helpful while composing tests.
+
+On the subject of testing, we highly recommend, but as always will not
+evaluate you on, judicious testing. The concrete syntax of brace3 is
+rewritten away by Desugar.term and then Curry.term. Both of these
+transformations are somewhat delicate, and if either one is incorrect
+in a small detail, compilation as a whole can fail in mysterious ways.
+
+And on the subject of failure, we expect you to implement compile and
+compile' such that they never cause compilation to terminate with an
+exception. Up until this point we have allowed the compiler simply to
+crash when errors occurred. This is fine for the purposes of homework
+exercises, but mature software should not crash when things go wrong
+-- certainly not predictable things like scan errors and parse
+errors. As a result, you will find a new "attempt" datatype in the
+Compile module, designed to represent either a successful result or a
+string describing the reason for failure. Use _exception handling_, to
+be discussed in class on Thursday, May 10, to enable these
+implementations. 
+
+The Compile module contains many different ways to compile programs,
+including various conveniences; Compile.fullBeta'' is a personal
+favorite.
+
+One remaining item: we expect you to implement alpha equivalence. This
+is the equivalence of terms that differ in variable names only. Some
+of you went ahead and did so in preparing your last homework. If so,
+good for you -- you can include it in your work this week; if not, you
+have the opportunity to solve this elegant problem this week instead.
+
+Best wishes and enjoy. -ams

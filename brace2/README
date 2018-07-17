@@ -1,0 +1,104 @@
+README
+Spring 2018
+
+Welcome to brace2! Brace2 is the untyped lambda calculus extended with
+one additional form, the let binding. 
+
+The concrete syntax of brace2 is as follows:
+
+t ::= x
+    | {x t}
+    | (t t)
+    | {x <- t in t}
+
+These are variables, abstractions (i.e., functions, i.e. "lambda
+abstractions"), applications, and let bindings, in that order. The let
+syntax from brace1 is retained. Let bindings are compiled away in a
+desugaring phase. Note that abstractions are written with curly braces
+and without the Greek character lambda and without the dot. This makes
+programs a bit more compact and easy to parse as all the compound
+syntactic forms are explicitly delimited.
+
+Variables in brace2 start with an uppercase or lowercase letter, and
+are then followed by any number of letters, numbers, and
+underscores. Note that a scanner and a parser are provided, so you
+need not implement these yourself. Whitespace is ignored and C++ style
+double-slash comments are supported, as before.
+
+After desugaring, brace2 terms are rewritten as terms in the untyped
+lambda calculus, which eliminates the let binding form:
+
+t ::= x
+    | {x t}
+    | (t t)
+
+The rule for rewriting let forms is as given in section 11.5 in the
+text. You can ignore the disclaimers and caveats, which apply to
+_typed_ abstractions; just implement the rule as it appears there,
+without the type.
+
+This week you have more than one evaluator to write: a call-by-value
+evaluation system following the rules presented in Figure 5-3 of the
+text, a lazy evaluation system, whose rules appear as a pair in the
+book's solution to 5.3.6 (the very last two rules), and a
+full-beta reduction system.
+
+The rules for full-beta reduction are as follows (these are presented
+in the text in the solution to exercise 5.3.6 except the lambda rule
+is missing!*):
+
+     t1 -> t1'
+-------------------
+(t1 t2) -> (t1' t2)
+
+
+     t2 -> t2'
+-------------------
+(t1 t2) -> (t1 t2')
+
+
+          t1 -> t1'
+-------------------------------
+lambda x . t1 -> lambda x . t1'
+
+
+----------------------------
+({x t1} t2) -> [x |-> t2] t1
+
+*The missing rule does appear in the online errata for the text, where
+it says "In the full beta-reduction rules, one is missing": see
+https://www.cis.upenn.edu/~bcpierce/tapl/errata.txt.
+
+The value class is not used in the full-beta reduction rules. As such,
+this system can be summarized as "evaluate whatever you want, whenever
+you want." As you will see, certain terms can be evaluated in
+different ways depending on which evaluation steps are chosen. (Please
+note the lack of a definite result complicates testing; nevertheless,
+you can implement full-beta however you want with respect to order.)
+
+The rules for substitution are as follows, given the following
+associated definition of FV (for "free variables"):
+
+FV(x)             = {x}
+FV(lambda x . t1) = FV(t1) \ {x}
+FV(t1 t2)         = FV(t1) U FV(t2)
+
+let x be v in t
+[x |-> s] x = s   // connotation: the two xs are syntactically identical
+[x |-> s] y = y   // connotation: x and y are syntactically distinct
+
+[x |-> s] (t1 t2) = ([x |-> s]t1  [x |->s]t2)
+
+[x |-> s] (lambda x . t1) = lambda x . t1 // connotation: the two xs are syntactically identical
+
+[x |-> s] (lambda y . t1) = // connotation: x and y are syntactically distinct
+
+  if y is in FV(s) : [x |->s] (lambda y' . t1')
+    where y' is a fresh variable name and in t1' all y terms are rewritten to y'
+
+  if y is not in FV(s) : lambda y . [x |-> s] t1
+
+Read chapter 5 for a full treatment of substitution.
+
+As usual, the occurrences of the string "todo" in the starter code
+provide a map of what to do for this exercise. Enjoy!

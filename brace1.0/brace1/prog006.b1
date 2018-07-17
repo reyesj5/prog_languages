@@ -1,0 +1,2 @@
+{== {isz {+1 {-1 {-1 {+1 {-1 0}}}}}} {&& {|| {if {isz 0} then {! F} else T} F} //second equal statement
+{! {isz {+1 {-1 0}}}}}}

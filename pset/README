@@ -1,0 +1,17 @@
+README
+Spring 2018
+
+This archive contains five files:
+
+- sources.cm, a standard Makefile-like file for this group of files,
+
+- check.sig, the Check module signature,
+
+- check.sml, the Check module implementation,
+
+- hw1.sml, a batch of programming exercises, and
+
+- this file.
+
+
+- CM.make "sources.cm";

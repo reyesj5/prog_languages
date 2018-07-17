@@ -1,0 +1,20 @@
+T
+F
+0
+{if T then F else 0}
+{+1 0}
+{-1 0}
+{isz 0}
+{&& F T}
+{|| F T}
+{! T}
+{== T T}
+()            // the unit constant
+x             // variables
+{x <- T in {!x}} // variable bindings
+{# T F}       // pairs
+{#1 {# T F}}        // #1 is the "first of pair" operator
+{#2 {# F T}}        // #2 is the "second of pair" operator
+{some T}      
+{none Bool}     // the none type annotation leaves out the Opt; see below
+{case {Some T} of some x -> t | none -> t} // this is the "optcase"; see below
